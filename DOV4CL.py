@@ -6,7 +6,6 @@ import numpy as np
 from utils.util import *
 from loaders.diffaugment import *
 
-# 创建特征张量和标签张量
 import torch
 from torch.utils.data import Dataset
 from PIL import Image
@@ -27,10 +26,43 @@ from utils.pos_embed import interpolate_pos_embed
 from networks.vit_cifar import *
 from methods.DINO.utils import Solarize
 from mmselfsup.models.backbones import ResNet, MoCoV3ViT
+import argparse
 
-sys.path.append('D:\Exp\SSL\mae-main')
+parser = argparse.ArgumentParser(description='CTRL Training')
 
-set_seed(99)
+parser.add_argument('--gpu', default=0, type=int, help='GPU id to use.')
+parser.add_argument('--seed', default=99, type=int, help='seed for initializing training. ')
+parser.add_argument('--n_sample_train', default=32, type=int, help='N_public')
+parser.add_argument('--n_sample_test', default=32, type=int, help='N_private')
+parser.add_argument('--n_aug', default=2, type=int, help='m')
+parser.add_argument('--n_aug_local', default=6, type=int, help='n')
+parser.add_argument('--n_epoch', default=50, type=int, help='T')
+parser.add_argument('--lamda', default=1, type=int, help='α,β')
+parser.add_argument('--D_public', default='cifar10', type=str, help='public dataset of defender')
+parser.add_argument('--M_shadow_arch', default='resnet18', type=str, help='the encoder architecture of M_shadow')
+parser.add_argument('--M_shadow_dataset', default='resnet18', type=str, help='the training set of M_shadow')
+parser.add_argument('--M_shadow_path', default='', type=str, help='the path of M_shadow')
+parser.add_argument('--M_suspect_arch', default='resnet18', type=str, help='the encoder architecture of M_suspect')
+parser.add_argument('--M_suspect_dataset', default='resnet18', type=str, help='the training set of M_suspect')
+parser.add_argument('--M_suspect_path', default='', type=str, help='the path of M_suspect')
+
+args = parser.parse_args()
+set_seed(args.seed)
+
+
+transform_load = transforms.Compose([
+            transforms.ToTensor(),
+        ])
+
+dir_v = {'D':args.D_public, 'arch':'resnet18', 'method':'simclr'}
+dir_shadow = {'D':args.M_shadow_dataset, 'arch':args.M_shadow_arch, 'method':'simclr'}   # M_shadow
+dir_adv = {'D':args.M_suspect_dataset, 'arch':args.M_suspect_arch, 'method':'simclr'}   # M_suspect
+n_sample_train = args.n_sample_train  # N_public
+n_sample_test = args.n_sample_test   # N_private
+n_aug = args.n_aug   # m
+n_aug_local = args.n_aug_local  # n
+n_epoch = args.n_epoch  # T
+lamda = args.lamda  # α,β
 
 def aug_img(img, n, aug_transform):
     aug_imgs = None
@@ -48,19 +80,6 @@ def aug_img(img, n, aug_transform):
 
     return aug_imgs
 
-transform_load = transforms.Compose([
-            transforms.ToTensor(),
-        ])
-
-dir_v = {'D':'cifar10', 'arch':'resnet18', 'method':'simclr'}
-dir_shadow = {'D':'cifar100', 'arch':'resnet18', 'method':'simclr'}   # M_shadow
-dir_adv = {'D':'cifar10', 'arch':'resnet18', 'method':'simclr'}   # M_suspect
-n_sample_train = 32   # N_public
-n_sample_test = 32   # N_private
-n_aug = 2   # m
-n_aug_local = 6  # n
-n_epoch = 50  # T
-lamda = 1  # α,β
 
 if 'cifar10' in dir_v['D']:
     img_size=32
@@ -135,8 +154,9 @@ normalize = transforms.Normalize(mean,std)
 # model_v.eval()
 # model_v = model_v.cuda()
 
-weightPath_shadow = f'D:\Exp\Backdoor\CTRL\CTRL-master\Experiments\{shadow_dataset}\{dir_shadow["D"]}-{dir_shadow["method"]}-{dir_shadow["arch"]}-clean-True\epoch_800.pth.tar'
+# weightPath_shadow = f'D:\Exp\Backdoor\CTRL\CTRL-master\Experiments\{shadow_dataset}\{dir_shadow["D"]}-{dir_shadow["method"]}-{dir_shadow["arch"]}-clean-True\epoch_800.pth.tar'
 # weightPath_shadow = r'Experiments\imagenet\mocov3_vit-small-p16_16xb256-amp-coslr-300e_in1k-224_20220826-08bc52f7.pth'
+weightPath_shadow = args.M_shadow_path
 model_fun, feat_dim = model_dict_cifar[dir_shadow['arch']] if 'cifar' in dir_shadow['D'] else model_dict[dir_shadow['arch']]
 if 'dino' in weightPath_shadow:
     model_shadow = model_fun(img_size=[img_size], patch_size=16)
@@ -159,9 +179,10 @@ else:
 model_shadow.eval()
 model_shadow = model_shadow.cuda()
 
-weightPath_adv = rf'D:\Exp\Backdoor\CTRL\CTRL-master\Experiments\{root_dataset}\{dir_adv["D"]}-{dir_adv["method"]}-{dir_adv["arch"]}-clean-True\checkpoint0800.pth' if dir_adv["method"]=='dino' else \
-                 rf'D:\Exp\Backdoor\CTRL\CTRL-master\Experiments\{root_dataset}\{dir_adv["D"]}-{dir_adv["method"]}-{dir_adv["arch"]}-clean-True\epoch_800.pth.tar'
+# weightPath_adv = rf'D:\Exp\Backdoor\CTRL\CTRL-master\Experiments\{root_dataset}\{dir_adv["D"]}-{dir_adv["method"]}-{dir_adv["arch"]}-clean-True\checkpoint0800.pth' if dir_adv["method"]=='dino' else \
+#                  rf'D:\Exp\Backdoor\CTRL\CTRL-master\Experiments\{root_dataset}\{dir_adv["D"]}-{dir_adv["method"]}-{dir_adv["arch"]}-clean-True\epoch_800.pth.tar'
 # weightPath_adv = r'Experiments\imagenette\imagewoof-simsiam-vgg16-clean-True\epoch_800.pth.tar'
+weightPath_adv = args.M_suspect_path
 model_fun, feat_dim = model_dict_cifar[dir_adv['arch']] if 'cifar' in dir_adv['D'] else model_dict[dir_adv['arch']]
 if 'dino' in weightPath_adv:
     model_adv = model_fun(img_size=[img_size], patch_size=4)

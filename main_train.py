@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(description='CTRL Training')
 parser.add_argument('--data_path', default='D:\exp\datasets')
 parser.add_argument('--steal_dataset', default='cifar10', choices=['cifar10', 'imagenette'])
 parser.add_argument('--dataset', default='cifar10', choices=['cifar10', 'cifar100', 'svhn', 'imagewoof', 'imagenette'])
-parser.add_argument('--part', default='before', choices=['before', 'after'])
+parser.add_argument('--part', default='before', choices=['before', 'after', ''])
 parser.add_argument('--unlabel', default=True)
 parser.add_argument('--disable_normalize', action='store_true', default=False)
 parser.add_argument('--full_dataset', action='store_true', default=True)
@@ -68,7 +68,7 @@ parser.add_argument('--channel', default=[1,2], nargs ='+', type=int)
 parser.add_argument('--threat_model', default='our', choices=['our'])
 parser.add_argument('--loss_alpha', default = 2.0, type=float)
 parser.add_argument('--strength', default= 1.0, type=float)  ### augmentation strength
-parser.add_argument('--ratio', default = 0.1, type=float, help='the ratio of D_public to the union of D_public and D_alternative'
+parser.add_argument('--ratio', default = 0.5, type=float, help='the ratio of D_public to the union of D_public and D_alternative'
                     , choices=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
 ###logging
 parser.add_argument('--log_path', default='Experiments', type=str, help='path to save log')
