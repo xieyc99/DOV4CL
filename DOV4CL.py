@@ -32,12 +32,12 @@ parser = argparse.ArgumentParser(description='CTRL Training')
 
 parser.add_argument('--gpu', default=0, type=int, help='GPU id to use.')
 parser.add_argument('--seed', default=99, type=int, help='seed for initializing training. ')
-parser.add_argument('--n_sample_train', default=32, type=int, help='N_public')
-parser.add_argument('--n_sample_test', default=32, type=int, help='N_private')
-parser.add_argument('--n_aug', default=2, type=int, help='m')
-parser.add_argument('--n_aug_local', default=6, type=int, help='n')
-parser.add_argument('--n_epoch', default=50, type=int, help='T')
-parser.add_argument('--lamda', default=1, type=int, help='α,β')
+parser.add_argument('--n_sample_train', default=32, type=int, help='k_public')
+parser.add_argument('--n_sample_test', default=32, type=int, help='k_private')
+parser.add_argument('--n_aug', default=2, type=int, help='M')
+parser.add_argument('--n_aug_local', default=6, type=int, help='N')
+parser.add_argument('--n_epoch', default=50, type=int, help='K')
+parser.add_argument('--lamda', default=1, type=int, help='a')
 parser.add_argument('--D_public', default='cifar10', type=str, help='public dataset of defender')
 parser.add_argument('--M_shadow_arch', default='resnet18', type=str, help='the encoder architecture of M_shadow')
 parser.add_argument('--M_shadow_dataset', default='resnet18', type=str, help='the training set of M_shadow')
@@ -57,12 +57,12 @@ transform_load = transforms.Compose([
 dir_v = {'D':args.D_public, 'arch':'resnet18', 'method':'simclr'}
 dir_shadow = {'D':args.M_shadow_dataset, 'arch':args.M_shadow_arch, 'method':'simclr'}   # M_shadow
 dir_adv = {'D':args.M_suspect_dataset, 'arch':args.M_suspect_arch, 'method':'simclr'}   # M_suspect
-n_sample_train = args.n_sample_train  # N_public
-n_sample_test = args.n_sample_test   # N_private
-n_aug = args.n_aug   # m
-n_aug_local = args.n_aug_local  # n
-n_epoch = args.n_epoch  # T
-lamda = args.lamda  # α,β
+n_sample_train = args.n_sample_train  # k_public
+n_sample_test = args.n_sample_test   # k_private
+n_aug = args.n_aug   # M
+n_aug_local = args.n_aug_local  # N
+n_epoch = args.n_epoch  # K
+lamda = args.lamda  # a
 
 def aug_img(img, n, aug_transform):
     aug_imgs = None
