@@ -35,11 +35,11 @@ python DOV4CL.py \
     --M_suspect_arch <Encoder Architecture of M_suspect> \
     --M_suspect_dataset <the Training Set of M_suspect> \
     --M_suspect_path <PATH/TO/M_suspect/DIR> \
-    --n_sample_train <N_public> \
-    --n_sample_test <N_private> \
-    --n_aug <m> \
-    --n_aug_local <n> \
-    --n_epoch <T> \
-    --lamda <α,β> \
+    --n_sample_train <k_public> \
+    --n_sample_test <k_private> \
+    --n_aug <M> \
+    --n_aug_local <N> \
+    --n_epoch <K> \
+    --lamda <a> \
     --gpu <GPU ID>
 ```
