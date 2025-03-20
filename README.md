@@ -46,7 +46,7 @@ python DOV4CL.py \
 ```
 
 ## Acknowledgement
-This resipotry is based on [CTRL]((https://github.com/meet-cjli/CTRL)
+This resipotry is based on [CTRL](https://github.com/meet-cjli/CTRL)
 
 ## Citation
 If you find our data or project useful in your research, please cite:
