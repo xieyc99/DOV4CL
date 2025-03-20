@@ -1,4 +1,5 @@
-### Pre-train Encoders
+## Code
+### 1. Pre-train Encoders
 Using SimCLR, BYOL, SimSiam or MoCo v3 to pre-train encoders:
 ```
 python main_train.py \
@@ -23,7 +24,7 @@ python dino_train.py \
     --gpu <GPU ID>
 ```
 
-### Dataset Ownership Verification by Our Method
+### 2. Dataset Ownership Verification by Our Method
 DOV4CL.py: The code of our method.
 You can run it in the following way:
 ```
@@ -42,4 +43,18 @@ python DOV4CL.py \
     --n_epoch <K> \
     --lamda <a> \
     --gpu <GPU ID>
+```
+
+## Acknowledgement
+This resipotry is based on [CTRL]((https://github.com/meet-cjli/CTRL))
+
+## Citation
+If you find our data or project useful in your research, please cite:
+```
+@article{xie2025dataset,
+  title={Dataset Ownership Verification in Contrastive Pre-trained Models},
+  author={Xie, Yuechen and Song, Jie and Xue, Mengqi and Zhang, Haofei and Wang, Xingen and Hu, Bingde and Chen, Genlang and Song, Mingli},
+  journal={arXiv preprint arXiv:2502.07276},
+  year={2025}
+}
 ```
